@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
 import Nav from "@/components/partials/Nav";
 import Footer from "@/components/partials/Footer";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +24,8 @@ export default function RootLayout({
         <Nav />
         <main className="max-w-6xl w-full mx-auto">{children}</main>
         <Footer />
+
+        <ToastContainer theme="dark" />
       </body>
     </html>
   );

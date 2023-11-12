@@ -1,21 +1,24 @@
 import Image from "next/image";
-import { useState } from "react";
 
 interface Props {
   title: string;
   cost: string;
   likeCount: number;
+  imgUrl: string;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export default function NFTCard(props: Props) {
   return (
-    <div className="w-72 p-3 rounded-2xl border border-slate-800  duration-200 transition-transform transform active:scale-95 cursor-pointer">
+    <div
+      onClick={props.onClick}
+      className="w-72 p-3 rounded-2xl border border-slate-800  duration-200 transition-transform transform active:scale-95 cursor-pointer"
+    >
       <div className="h-[280px] w-full">
         <img
-          fill
           alt="nft"
           className="rounded-2xl object-cover w-full h-full"
-          src="/nft.png"
+          src={props.imgUrl}
         />
       </div>
 

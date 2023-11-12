@@ -4,10 +4,15 @@ import Image from "next/image";
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-export default function Uploader() {
-  const onDrop = useCallback((acceptedFiles) => {
-    console.log(acceptedFiles);
-    // Do something with the files
+interface Props {
+  onUpload?: (acceptedFiles: File[]) => void;
+}
+
+export default function Uploader(props: Props) {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (props.onUpload) {
+      props.onUpload(acceptedFiles);
+    }
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });

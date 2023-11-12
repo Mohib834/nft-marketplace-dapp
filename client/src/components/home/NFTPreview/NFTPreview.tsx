@@ -4,19 +4,19 @@ interface Props {
   title: string;
   description: string;
   price: string;
+  imgUrl: string;
   isSold?: boolean;
   isLiked?: boolean;
 }
 
-export default function NFTPreview(props: Partial<Props>) {
+export default function NFTPreview(props: Props) {
   return (
     <div className="w-full flex rounded-2xl border border-slate-800 p-4">
       <div className="h-[650px] flex-1">
         <img
-          fill
           alt="nft"
           className="rounded-2xl object-cover w-full h-full"
-          src="/nft.png"
+          src={props.imgUrl}
         />
       </div>
 
@@ -25,11 +25,10 @@ export default function NFTPreview(props: Partial<Props>) {
           <div className="mt-10 flex-col justify-start items-start gap-7 inline-flex">
             <div className="self-stretch flex-col justify-start items-start gap-2 inline-flex">
               <div className="text-white text-4xl font-semibold leading-10 tracking-tight">
-                Dui accumsan leo vestibulum ornare
+                {props.title}
               </div>
               <div className="text-slate-500 text-base font-normal leading-normal tracking-tight">
-                Ut amet vulputate faucibus vitae semper eget auctor. Diam tempor
-                pulvinar ultricies dolor.
+                {props.description}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -51,7 +50,7 @@ export default function NFTPreview(props: Partial<Props>) {
           </div>
 
           <div className="mt-11">
-            <NFTPreviewPriceView price="5.5" />
+            <NFTPreviewPriceView price={props.price} />
           </div>
         </div>
       </div>

@@ -18,8 +18,8 @@ contract NFTMarketPlace is ERC721URIStorage {
     uint256 private immutable i_feePercentage;
     address payable private immutable i_feeAddress;
     mapping(uint256 => NFTAsset) private assetsMap;
-    NFTAsset[] private assetsList;
-
+    
+    NFTAsset[] public assetsList;
     uint256 public tokenCount;
 
     // Events
@@ -92,10 +92,6 @@ contract NFTMarketPlace is ERC721URIStorage {
     }
 
     // views
-    function getAllAssets() public view returns(NFTAsset[] memory){
-        return assetsList;
-    }
-
     function getAssetTotalPrice(uint256 _tokenId) public view returns(uint){
         return assetsMap[_tokenId].price + (assetsMap[_tokenId].price * i_feePercentage) / 100;
     }
