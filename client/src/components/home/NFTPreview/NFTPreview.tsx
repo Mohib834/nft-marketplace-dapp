@@ -1,18 +1,21 @@
 import NFTPreviewPriceView from "./NFTPreviewPriceView";
 
 interface Props {
+  id: string;
   title: string;
   description: string;
   price: string;
   imgUrl: string;
   isSold?: boolean;
   isLiked?: boolean;
+  isLoading?: boolean;
+  onBuyClick?: (tokenId: string) => void;
 }
 
 export default function NFTPreview(props: Props) {
   return (
     <div className="w-full flex rounded-2xl border border-slate-800 p-4">
-      <div className="h-[650px] flex-1">
+      <div className="min-h-[60vh] max-h-[60vh] flex-1">
         <img
           alt="nft"
           className="rounded-2xl object-cover w-full h-full"
@@ -31,26 +34,14 @@ export default function NFTPreview(props: Props) {
                 {props.description}
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10">
-                <img
-                  className="rounded-full"
-                  src="https://via.placeholder.com/40x40"
-                />
-              </div>
-              <div className="h-12 flex-col justify-center items-start inline-flex">
-                <div className="text-slate-500 text-sm font-normal leading-tight tracking-tight">
-                  Creator
-                </div>
-                <div className="w-28 h-5 text-white text-xs font-semibold tracking-tight">
-                  @brook_sim
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="mt-11">
-            <NFTPreviewPriceView price={props.price} />
+            <NFTPreviewPriceView
+              price={props.price}
+              isLoading={props.isLoading}
+              onBuyClick={() => props.onBuyClick && props.onBuyClick(props.id)}
+            />
           </div>
         </div>
       </div>

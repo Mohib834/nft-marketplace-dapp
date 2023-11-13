@@ -2,6 +2,8 @@ import Button from "@/components/partials/Button";
 
 interface Props {
   price: string;
+  isLoading?: boolean;
+  onBuyClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function NFTPreviewPriceView(props: Props) {
@@ -10,9 +12,9 @@ export default function NFTPreviewPriceView(props: Props) {
       <div className="mb-3 text-slate-500 text-sm font-normal leading-tight tracking-tight">
         Current price
       </div>
-      <div className="relative -left-1 mb-8">
+      <div className="relative -left-1 mb-6">
         <span className="text-white text-6xl font-semibold leading-10 tracking-tight">
-          5.25
+          {props.price}
         </span>
         <span className="ml-3 text-white text-2xl font-semibold leading-normal tracking-tight">
           ETH
@@ -20,7 +22,12 @@ export default function NFTPreviewPriceView(props: Props) {
       </div>
 
       <div className="w-full">
-        <Button variant="primary" style={{ width: "100%" }}>
+        <Button
+          variant="primary"
+          style={{ width: "100%" }}
+          onClick={props.onBuyClick}
+          loading={props.isLoading}
+        >
           Buy
         </Button>
       </div>

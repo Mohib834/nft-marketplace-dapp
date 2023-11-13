@@ -2,26 +2,31 @@
 
 import NFTPreview from "@/components/home/NFTPreview/NFTPreview";
 import NFTCard from "@/components/partials/NFTCard/NFTCard";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, useEffect, useRef, useState } from "react";
 import { useEthers } from "@/hooks/useEthers";
 import { useIPFSStorage } from "@/hooks/useIPFSStorage";
-import { Contract } from "ethers";
+import { Contract, parseEther } from "ethers";
 import NFTCardPlaceholder from "@/components/partials/NFTCard/NFTCardPlaceholder";
 import { useTransition, animated } from "react-spring";
+import { toast } from "react-toastify";
 
 interface NFTAsset {
+  id: string;
   name: string;
   description: string;
   price: string;
   imgUrl: string;
+  isSold: boolean;
+  seller: string;
 }
 
 export default function Home() {
-  const [nftAssets, setNftAssets] = useState<NFTAsset[]>([]);
   const { generateContract } = useEthers();
   const { fetchStoreData } = useIPFSStorage();
 
+  const [nftAssets, setNftAssets] = useState<NFTAsset[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [showPreview, setShowPreview] = useState<ComponentProps<
     typeof NFTPreview
   > | null>(null);
@@ -73,8 +78,13 @@ export default function Home() {
 
         nfts.push({
           ...data,
+          id: asset.tokenId,
           imgUrl: imageUrl,
+          isSold: asset.isSold,
+          seller: asset.seller,
         });
+
+        console.log("nfts", nfts);
       }
       setNftAssets(nfts);
     } finally {
@@ -82,13 +92,52 @@ export default function Home() {
     }
   };
 
+  const buyAsset = async (tokenId: string) => {
+    try {
+      const contract = await generateContract("signer");
+
+      if (!contract) throw new Error();
+
+      setIsActionLoading(true);
+
+      const totalPrice = await contract.getAssetTotalPrice(tokenId);
+
+      console.log(totalPrice.toString());
+
+      const transaction = await contract.buyAsset(tokenId, {
+        value: totalPrice.toString(),
+      });
+      const tx = await transaction.wait();
+
+      // updating the isSold state
+      const updatedAssets = nftAssets.map((a) => {
+        if (a.id === tokenId) {
+          return {
+            ...a,
+            isSold: true,
+          };
+        }
+        return a;
+      });
+
+      setNftAssets(updatedAssets);
+    } catch (err) {
+      toast.error("Something went wrong!");
+
+      throw err;
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
   const handleNFTClick = (asset: NFTAsset) => {
     window.scrollTo(0, 0);
     setShowPreview({
+      id: asset.id,
       title: asset.name,
       description: asset.description,
       isLiked: false,
-      isSold: false,
+      isSold: asset.isSold,
       price: asset.price,
       imgUrl: asset.imgUrl,
     });
@@ -98,8 +147,12 @@ export default function Home() {
     <div>
       {transitions((style, item) =>
         item && showPreview ? (
-          <animated.div style={style} className="mt-6 mb-28">
-            <NFTPreview {...showPreview} />
+          <animated.div style={style} className="mt-8 mb-28">
+            <NFTPreview
+              {...showPreview}
+              onBuyClick={buyAsset}
+              isLoading={isActionLoading}
+            />
           </animated.div>
         ) : null
       )}

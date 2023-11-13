@@ -70,24 +70,25 @@ contract NFTMarketPlace is ERC721URIStorage {
         if(_tokenId <= 0 && _tokenId > tokenCount) revert InvalidTokenIdProvided();
 
         uint totalPrice = getAssetTotalPrice(_tokenId);
-        NFTAsset memory asset = assetsMap[_tokenId];
+        NFTAsset storage asset = assetsMap[_tokenId];
         
-        if(msg.value != (totalPrice * 1 ether)) revert InvalidAmount(msg.value, totalPrice * 1 ether);
+        if(msg.value != totalPrice) revert InvalidAmount(msg.value, totalPrice);
 
         // transfer the nft to the buyer
         _safeTransfer(address(this), msg.sender, _tokenId);
 
         // transfer the amount to seller
-        (bool sellerSent,) = asset.seller.call{value: asset.price * 1 ether}("");
+        (bool sellerSent,) = asset.seller.call{value: asset.price}("");
 
         if(!sellerSent) revert SendingFailed();
 
         // transfer the fee to the relevent address
         uint fee = totalPrice - asset.price;
-        (bool sent,) = i_feeAddress.call{value: fee * 1 ether}("");
+        (bool sent,) = i_feeAddress.call{value: fee}("");
 
         if(!sent) revert SendingFailed();
 
+        asset.isSold = true;
         emit AssetBought(_tokenId, msg.sender, asset.price);
     }
 
